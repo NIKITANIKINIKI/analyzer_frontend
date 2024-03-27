@@ -1,0 +1,19 @@
+
+.root{
+    display: flex;
+    align-items: center;
+    background-color: rgb(255, 255, 255);
+    height: 60px;
+    width: 100%;
+    border-bottom: 2px solid rgb(211, 200, 200) ;
+    position: relative;
+}
+
+.logo{
+    width: 45px;
+}
+
+.auth{
+    position: absolute;
+    right: 0;
+}
