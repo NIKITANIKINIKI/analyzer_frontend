@@ -5,15 +5,15 @@ import Button from "@mui/material/Button";
 
 import styles from "./Login.module.scss";
 import { useForm } from "react-hook-form";
-// import {fetchUser, selectIsAuth} from '../../redux/slice/login'
-//import {useDispatch, useSelector} from 'react-redux'
+import {fetchLogin, selectIsAuth} from '../../redux/slice/auth'
+import {useDispatch, useSelector} from 'react-redux'
 import {Navigate} from 'react-router-dom'
 
 function Login() {
 
-//   const isAuth=useSelector(selectIsAuth)
+  const isAuth=useSelector(selectIsAuth)
 
-  //const dispatch=useDispatch()
+  const dispatch=useDispatch()
   
   const {
     register,
@@ -27,27 +27,27 @@ function Login() {
   });
 
   const onSubmit = async (val) => {
-    // const data = await dispatch(fetchUser(val))
+    const data = await dispatch(fetchLogin(val))
 
-    // if(!data.payload){
-    //   return alert('Failed to login')
-    // }
+    if(!data.payload){
+      return alert('Failed to login')
+    }
 
-    // if('token' in data.payload){
-    //   window.localStorage.setItem('token', data.payload.token)
-    // }
-    // else{
-    //   alert('An error occured in obtaining a token')
-    // }
+    if('access_token' in data.payload){
+      window.localStorage.setItem('access_token', data.payload.access_token)
+    }
+    else{
+      alert('An error occured in obtaining a token')
+    }
 
     console.log('')
 
   };
 
 
-//   if(isAuth){
-//     return <Navigate to='/'/>
-//   }
+  if(isAuth){
+    return <Navigate to='/'/>
+  }
 
   return (
     <Paper className={styles.content}>

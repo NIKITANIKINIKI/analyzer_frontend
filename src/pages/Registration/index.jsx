@@ -13,7 +13,7 @@ import { Navigate } from "react-router-dom";
 function Registration() {
   const dispatch = useDispatch();
 
-  // const isAuth = useSelector(selectIsAuth);
+  const isAuth = useSelector(selectIsAuth);
 
   const {
     register,
@@ -37,17 +37,16 @@ function Registration() {
     }
 
     if ("access_token" in data.payload) {
-      window.localStorage.setItem("access_token", data.payload.token);
+      window.localStorage.setItem("access_token", data.payload.access_token);
     } else {
       alert("There was an error during registration");
     }
 
-    console.log('')
   };
 
-//   if (isAuth) {
-//     return <Navigate to="/"></Navigate>;
-//   }
+  if (isAuth) {
+    return <Navigate to="/"></Navigate>;
+  }
 
   return (
     <Paper className={styles.content}>
