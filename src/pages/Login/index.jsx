@@ -4,6 +4,7 @@ import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
 
 import styles from "./Login.module.scss";
+import bmstu from "../../assets/bmstu.png";
 import { useForm } from "react-hook-form";
 import {fetchLogin, selectIsAuth} from '../../redux/slice/auth'
 import {useDispatch, useSelector} from 'react-redux'
@@ -51,13 +52,14 @@ function Login() {
 
   return (
     <Paper className={styles.content}>
+      <img src={bmstu} className={styles.logo} alt='logo'/>
       <Typography className={styles.title} variant="h4">
-        Hello!
+        Вход в систему
       </Typography>
       <form onSubmit={handleSubmit(onSubmit)} className={styles.forms}>
         <TextField
           error={Boolean(errors.email?.message)}
-          label="Your email"
+          label="Введите свою почту"
           helperText={errors.email?.message}
           {...register("email", { required: "Incorrect email" })}
           type='email'
@@ -65,17 +67,17 @@ function Login() {
         />
         <TextField
           errors={Boolean(errors.password?.message)}
-          label="Your password"
+          label="Введите свой пароль"
           fullWidth
           helperText={errors.password?.message}
           {...register("password", { required: "Incorrect password" })}
         />
         <div className={styles.login}>
           <Typography variant="caption">
-            Have your forgotten your password?
+            Не удается войти? Вы забыли пароль?
           </Typography>
           <Button disabled={!isValid} type="submit" size="lg" variant="contained">
-            Login
+            Войти
           </Button>
         </div>
       </form>

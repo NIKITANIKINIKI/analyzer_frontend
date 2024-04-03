@@ -6,61 +6,44 @@ import {
   Box,
   Switch,
   FormControlLabel,
-  Typography
+  Typography,
 } from "@mui/material";
-import LoadingButton from '@mui/lab/LoadingButton';
+import LoadingButton from "@mui/lab/LoadingButton";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import SendIcon from '@mui/icons-material/Send';
-import { styled } from "@mui/material/styles";
+import SendIcon from "@mui/icons-material/Send";
+
 import styles from "./Loading.module.scss";
 import BasicModal from "../BasicModal";
+import LoadedFile from "../../components/LoadedFile";
+import { read, utils } from "xlsx";
 
-import React from "react";
-import { useDispatch,  } from "react-redux";
+import VisuallyHiddenInput from "./VisuallyHiddenInput";
+
+import React from 'react'
+import { useDispatch, useSelector } from "react-redux";
 import { fetchFiles } from "../../redux/slice/files";
+import { selectAlgorithms } from "../../redux/slice/algorithms";
 
-const VisuallyHiddenInput = styled("input")({
-  clip: "rect(0 0 0 0)",
-  clipPath: "inset(50%)",
-  height: 1,
-  overflow: "hidden",
-  position: "absolute",
-  bottom: 0,
-  left: 0,
-  whiteSpace: "nowrap",
-  width: 1,
-});
-
-const algorithms = [
-  {
-    value: "1",
-    label: "111111",
-  },
-  {
-    value: "2",
-    label: "111111",
-  },
-  {
-    value: "3",
-    label: "111111",
-  },
-];
 
 const Loading = () => {
   const dispatch = useDispatch();
+
+  const algorithms=useSelector(selectAlgorithms)
+
   const [checked, setChecked] = React.useState(true);
-  const [files, setFiles] = React.useState('');
-  const [open, setOpen]=React.useState(false)
-  const [loading, setLoading]=React.useState(false)
+  const [files, setFiles] = React.useState("");
+  const [tableHeaders, setTableHeaders] = React.useState("");
+  const [tableData, setTableData] = React.useState("");
+  const [open, setOpen] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
 
+  const handleClose = () => {
+    setOpen(false);
+  };
 
-  const handleClose=()=>{
-    setOpen(false)
-  }
-
-  const handleOpen=()=>{
-    setOpen(true)
-  }
+  const handleOpen = () => {
+    setOpen(true);
+  };
 
   const handleChange = (event) => {
     setChecked(event.target.checked);
@@ -76,17 +59,31 @@ const Loading = () => {
     const formData = new FormData();
     formData.append("files", files[0]);
 
-    setLoading(true)
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const fileContents = event.target.result;
+      const workbook = read(fileContents, { type: "binary" });
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
+      const parsedData = utils.sheet_to_json(sheet, { header: 1 });
+      const sheetHeaders = parsedData[0];
+      const sheetData = parsedData.slice(1);
+
+      setTableHeaders(sheetHeaders);
+      setTableData(sheetData);
+
+    };
+    reader.readAsBinaryString(files[0]);
+
+    setLoading(true);
     const data = await dispatch(fetchFiles(formData));
-    setFiles('')
-    setLoading(false)
+    setFiles("");
+    setLoading(false);
 
     if (data) {
-      handleOpen()
+      handleOpen();
       console.log(data);
     }
-
-  
   };
 
   return (
@@ -129,30 +126,34 @@ const Loading = () => {
               onChange={handleFileChange}
             >
               Загрузка
-              <VisuallyHiddenInput type="file"/>
-              
+              <VisuallyHiddenInput type="file" />
             </Button>
             <Box>
-            <Typography>
-                {files && files[0].name}
-          </Typography>
+              <Typography>{files && files[0].name}</Typography>
             </Box>
-            
+
             <LoadingButton
-            type='submit'
-          size="small"
-          endIcon={<SendIcon />}
-          loading={loading}
-          loadingPosition="end"
-          variant="contained"
-          disabled={!Boolean(files[0])}
-        >
-          <span>Отправить</span>
-        </LoadingButton>
+              type="submit"
+              size="small"
+              endIcon={<SendIcon />}
+              loading={loading}
+              loadingPosition="end"
+              variant="contained"
+              disabled={!Boolean(files[0])}
+            >
+              <span>Отправить</span>
+            </LoadingButton>
           </Box>
         </form>
       </Paper>
-      <BasicModal title='Ваш файл успешно загружен' content='' open={open} handleClose={handleClose}/>
+      <BasicModal
+        title="Ваш файл успешно загружен"
+        content=""
+        open={open}
+        handleClose={handleClose}
+      />
+      {files && (<LoadedFile tableHeaders={tableHeaders} tableData={tableData} />)}
+      
     </>
   );
 };

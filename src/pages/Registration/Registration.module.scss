@@ -14,14 +14,19 @@
     }
   }
 
-.label{
-    background-image: linear-gradient(to left, #bd12ac, #0fd415); //
-    background-clip: text; //
-    color: transparent; //
-}
+// .label{
+//     background-image: linear-gradient(to left, #bd12ac, #0fd415); //
+//     background-clip: text; //
+//     color: transparent; //
+// }
 
 .forms{
   display:flex;
   flex-direction: column;
   gap: 10px;
+  width: 80%;
+}
+
+.logo{
+  width:25%;
 }

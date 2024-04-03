@@ -4,7 +4,8 @@ import axios from "../../axios";
 
 const initialState={
     data: null,
-    status: 'loading'
+    status: 'loading',
+    file:null
 }
 
 
@@ -19,7 +20,11 @@ export const fetchFiles=createAsyncThunk(
 const filesSlice=createSlice({
     name: 'files',
     initialState,
-    reducers:{},
+    reducers:{
+       setFile(state, action){
+        state.file=action.payload
+       } 
+    },
     extraReducers:(builder) => {
         builder
         .addCase(fetchFiles.fulfilled, (state, action) =>{
@@ -36,3 +41,5 @@ const filesSlice=createSlice({
 
 
 export const filesReducer=filesSlice.reducer
+
+export const {setFile}=filesSlice.actions
