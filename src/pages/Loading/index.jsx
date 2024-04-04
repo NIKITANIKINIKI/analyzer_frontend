@@ -36,12 +36,14 @@ const Loading = () => {
   const [tableData, setTableData] = React.useState("");
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+  const [modalText, setModalText ]=React.useState(false)
 
   const handleClose = () => {
     setOpen(false);
   };
 
   const handleOpen = () => {
+    setModalText('Ваш файл успешно загружен')
     setOpen(true);
   };
 
@@ -50,15 +52,16 @@ const Loading = () => {
   };
 
   const handleFileChange = (event) => {
-    setFiles(event.target.files);
-  };
 
-  const onSubmit = async (event) => {
-    event.preventDefault();
+    const file=event.target.files
 
-    const formData = new FormData();
-    formData.append("files", files[0]);
+    if(file[0].type!=="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"){
+      setModalText('Неправильный формат файла, рекомендуется использовать xlsx')
+      setOpen(true);
+      return
+    }
 
+    setFiles(file);
     const reader = new FileReader();
     reader.onload = (event) => {
       const fileContents = event.target.result;
@@ -66,14 +69,27 @@ const Loading = () => {
       const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
       const parsedData = utils.sheet_to_json(sheet, { header: 1 });
-      const sheetHeaders = parsedData[0];
-      const sheetData = parsedData.slice(1);
+      const sheetHeaders=parsedData[0].map((el, index)=>{
+        return el+'\n'+(parsedData[1][index] ? parsedData[1][index] :'')
+      })
+      const sheetData = parsedData.slice(2);
 
       setTableHeaders(sheetHeaders);
       setTableData(sheetData);
 
+      console.log(sheetHeaders, sheetData)
+
     };
-    reader.readAsBinaryString(files[0]);
+    reader.readAsBinaryString(file[0])
+
+    
+  };
+
+  const onSubmit = async (event) => {
+    event.preventDefault();
+
+    const formData = new FormData();
+    formData.append("files", files[0]);
 
     setLoading(true);
     const data = await dispatch(fetchFiles(formData));
@@ -147,12 +163,12 @@ const Loading = () => {
         </form>
       </Paper>
       <BasicModal
-        title="Ваш файл успешно загружен"
+        title={modalText}
         content=""
         open={open}
         handleClose={handleClose}
       />
-      {files && (<LoadedFile tableHeaders={tableHeaders} tableData={tableData} />)}
+      {tableHeaders && tableData && !loading && (<LoadedFile tableHeaders={tableHeaders} tableData={tableData} />)}
       
     </>
   );
