@@ -8,6 +8,7 @@ import {useDispatch} from 'react-redux'
 import Registration from "./pages/Registration";
 import Login from "./pages/Login";
 import Loading from "./pages/Loading";
+import Files from './pages/Files'
 
 const App = () => {
   const dispatch=useDispatch()
@@ -24,6 +25,8 @@ const App = () => {
                 <Route element={<Registration/>} path='/register'></Route>
                 <Route element={<Login/>} path='/login'></Route>
                 <Route element={<Loading/>} path='/loading'></Route>
+                <Route element={<Files/>} path='/files'></Route>
+
             </Routes>
       </Container>
     </>

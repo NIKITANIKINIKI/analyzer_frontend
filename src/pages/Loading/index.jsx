@@ -92,7 +92,7 @@ const Loading = () => {
     formData.append("files", files[0]);
 
     setLoading(true);
-    const data = await dispatch(fetchFiles(formData));
+    const data = dispatch(fetchFiles(formData));
     setFiles("");
     setLoading(false);
 
@@ -100,6 +100,9 @@ const Loading = () => {
       handleOpen();
       console.log(data);
     }
+
+    setTableHeaders('')
+    setTableData('')
   };
 
   return (
