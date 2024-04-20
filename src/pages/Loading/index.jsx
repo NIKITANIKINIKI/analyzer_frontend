@@ -19,16 +19,17 @@ import { read, utils } from "xlsx";
 
 import VisuallyHiddenInput from "./VisuallyHiddenInput";
 
-import React from 'react'
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchFiles } from "../../redux/slice/files";
 import { selectAlgorithms } from "../../redux/slice/algorithms";
 
+import noData from "../../assets/noData.png";
 
 const Loading = () => {
   const dispatch = useDispatch();
 
-  const algorithms=useSelector(selectAlgorithms)
+  const algorithms = useSelector(selectAlgorithms);
 
   const [checked, setChecked] = React.useState(true);
   const [files, setFiles] = React.useState("");
@@ -36,14 +37,14 @@ const Loading = () => {
   const [tableData, setTableData] = React.useState("");
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
-  const [modalText, setModalText ]=React.useState(false)
+  const [modalText, setModalText] = React.useState(false);
 
   const handleClose = () => {
     setOpen(false);
   };
 
   const handleOpen = () => {
-    setModalText('Ваш файл успешно загружен')
+    setModalText("Ваш файл успешно загружен");
     setOpen(true);
   };
 
@@ -52,13 +53,17 @@ const Loading = () => {
   };
 
   const handleFileChange = (event) => {
+    const file = event.target.files;
 
-    const file=event.target.files
-
-    if(file[0].type!=="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"){
-      setModalText('Неправильный формат файла, рекомендуется использовать xlsx')
+    if (
+      file[0].type !==
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    ) {
+      setModalText(
+        "Неправильный формат файла, рекомендуется использовать xlsx"
+      );
       setOpen(true);
-      return
+      return;
     }
 
     setFiles(file);
@@ -69,20 +74,17 @@ const Loading = () => {
       const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
       const parsedData = utils.sheet_to_json(sheet, { header: 1 });
-      const sheetHeaders=parsedData[0].map((el, index)=>{
-        return el+'\n'+(parsedData[1][index] ? parsedData[1][index] :'')
-      })
+      const sheetHeaders = parsedData[0].map((el, index) => {
+        return el + "\n" + (parsedData[1][index] ? parsedData[1][index] : "");
+      });
       const sheetData = parsedData.slice(2);
 
       setTableHeaders(sheetHeaders);
       setTableData(sheetData);
 
-      console.log(sheetHeaders, sheetData)
-
+      console.log(sheetHeaders, sheetData);
     };
-    reader.readAsBinaryString(file[0])
-
-    
+    reader.readAsBinaryString(file[0]);
   };
 
   const onSubmit = async (event) => {
@@ -101,8 +103,8 @@ const Loading = () => {
       console.log(data);
     }
 
-    setTableHeaders('')
-    setTableData('')
+    setTableHeaders("");
+    setTableData("");
   };
 
   return (
@@ -164,6 +166,11 @@ const Loading = () => {
             </LoadingButton>
           </Box>
         </form>
+        {!tableHeaders && (
+        <div className={styles.nodata}>
+          <img width={150} src={noData}></img>
+        </div>
+      )}
       </Paper>
       <BasicModal
         title={modalText}
@@ -171,7 +178,9 @@ const Loading = () => {
         open={open}
         handleClose={handleClose}
       />
-      {tableHeaders && tableData && !loading && (<LoadedFile tableHeaders={tableHeaders} tableData={tableData} />)}
+      {tableHeaders && tableData && !loading && (
+        <LoadedFile tableHeaders={tableHeaders} tableData={tableData} />
+      )}
       
     </>
   );

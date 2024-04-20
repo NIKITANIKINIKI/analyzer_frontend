@@ -10,6 +10,8 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import {useDispatch} from 'react-redux'
 import {fetchDeleteFile} from '../../redux/slice/files'
+import {Link} from 'react-router-dom'
+import toast from 'react-hot-toast'
 
 const File = ({ filename, file_id }) => {
 
@@ -17,6 +19,7 @@ const File = ({ filename, file_id }) => {
   
   const deleteFile=()=>{
     dispatch(fetchDeleteFile(file_id))
+    toast.success('Успешно удалено')
   }
 
   return (
@@ -32,9 +35,12 @@ const File = ({ filename, file_id }) => {
           {filename}
         </Typography>
         <Box sx={{ float: "right" }}>
+          <Link to={`/files/${file_id}`}>
           <Button sx={{marginRight:'5px'} } variant="outlined"  size="small">
             Открыть
           </Button>
+          </Link>
+          
           <Button onClick={deleteFile} variant="outlined" size="small" color="error" startIcon={<DeleteIcon />}>
             Удалить
           </Button>
